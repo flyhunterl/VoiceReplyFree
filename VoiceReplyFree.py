@@ -26,6 +26,7 @@ class VoiceReplyFree(Plugin):
         self.handlers[Event.ON_HANDLE_CONTEXT] = self.on_handle_context
         self.config_file = os.path.join(os.path.dirname(__file__), "config.json")
         self.config = self.load_config()
+        self.temp_files = []  # 用于跟踪临时文件
         logger.info("[VoiceReplyFree] 插件已初始化")
 
     def load_config(self):
@@ -46,7 +47,9 @@ class VoiceReplyFree(Plugin):
                         "base": "https://api.llingfei.com/v1",
                         "api_key": "your_api_key_here",
                         "model": "hsdeepseek-chat",
-                        "temperature": 0.7
+                        "temperature": 0.7,
+                        "system_prompt": "你是一个友好的AI助手，请用简洁明了的语言回答问题。",
+                        "user_prompt": "{question}"
                     },
                     "pollinations": {
                         "base": "https://text.pollinations.ai",
@@ -65,7 +68,9 @@ class VoiceReplyFree(Plugin):
                     "base": "https://api.llingfei.com/v1",
                     "api_key": "",
                     "model": "hsdeepseek-chat",
-                    "temperature": 0.7
+                    "temperature": 0.7,
+                    "system_prompt": "你是一个友好的AI助手，请用简洁明了的语言回答问题。",
+                    "user_prompt": "{question}"
                 },
                 "pollinations": {
                     "base": "https://text.pollinations.ai",
@@ -91,17 +96,19 @@ class VoiceReplyFree(Plugin):
 
             model = self.config["chat"].get("model", "hsdeepseek-chat")
             temperature = self.config["chat"].get("temperature", 0.7)
+            system_prompt = self.config["chat"].get("system_prompt", "你是一个友好的AI助手，请用简洁明了的语言回答问题。")
+            user_prompt = self.config["chat"].get("user_prompt", "{question}").format(question=question)
 
             data = {
                 "model": model,
                 "messages": [
                     {
                         "role": "system",
-                        "content": "你是一个友好的AI助手，请用简洁明了的语言回答问题。"
+                        "content": system_prompt
                     },
                     {
                         "role": "user",
-                        "content": question
+                        "content": user_prompt
                     }
                 ],
                 "temperature": temperature
@@ -182,6 +189,9 @@ class VoiceReplyFree(Plugin):
                     logger.error("[VoiceReplyFree] 下载的语音文件大小为0")
                     os.remove(mp3_path)
                     return None
+                
+                # 将临时文件添加到跟踪列表
+                self.temp_files.append(mp3_path)
                 
                 logger.info(f"[VoiceReplyFree] 语音生成完成: {mp3_path}, 大小: {os.path.getsize(mp3_path)/1024:.2f}KB")
                 return mp3_path
@@ -271,4 +281,20 @@ class VoiceReplyFree(Plugin):
         help_text += "- 发送 '语音+您的问题'、'语音 您的问题' 或 '语音您的问题' 获取AI的语音回答\n"
         help_text += "例如：语音+今天天气怎么样、语音 讲个笑话、语音你好啊\n\n"
         help_text += "注意：本插件使用Pollinations.ai的免费语音服务，无需额外配置TTS API"
-        return help_text 
+        return help_text
+
+    def cleanup(self):
+        """
+        清理插件生成的临时文件
+        """
+        try:
+            for file_path in self.temp_files:
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                        logger.debug(f"[VoiceReplyFree] 已清理临时文件: {file_path}")
+                    except Exception as e:
+                        logger.error(f"[VoiceReplyFree] 清理临时文件失败 {file_path}: {e}")
+            self.temp_files.clear()
+        except Exception as e:
+            logger.error(f"[VoiceReplyFree] 清理任务异常: {e}") 

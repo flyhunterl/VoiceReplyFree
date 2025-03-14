@@ -64,11 +64,13 @@ VoiceReplyFree是一个基于[VoiceReply](https://github.com/flyhunterl/VoiceRep
 3. 配置文件加载失败时会使用默认配置
 
 ## 鸣谢
+- [dify-on-wechat](https://github.com/hanfangyuan4396/dify-on-wechat) - 本项目的基础框架
+- [SearchMusic](https://github.com/Lingyuzhou111/SearchMusic) - 项目思路来源
+- [Gewechat](https://github.com/Devo919/Gewechat) - 微信机器人框架，个人微信二次开发的免费开源框架 
 
-* dify-on-wechat - 本项目的基础框架
-* VoiceReply - 项目思路来源
-* Pollinations.ai - 提供语音合成服务
 
-## 许可证
+## 打赏
 
-MIT License 
+如果您觉得这个项目对您有帮助，欢迎打赏支持作者继续维护和开发更多功能！
+
+![20250314_125818_133_copy](https://github.com/user-attachments/assets/33df0129-c322-4b14-8c41-9dc78618e220)

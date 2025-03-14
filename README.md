@@ -1,5 +1,6 @@
 # VoiceReplyFree
 **大家帮忙点点star 谢谢啦!**
+
 VoiceReplyFree是一个基于[VoiceReply](https://github.com/flyhunterl/VoiceReply)的分支项目，它使用[Pollinations.ai](https://pollinations.ai/)的语音服务来生成语音回复，无需配置TTS模型。使用前需参照[VoiceReply](https://github.com/flyhunterl/VoiceReply)中的语音信息配置部分进行配置
 
 ## 功能特点
